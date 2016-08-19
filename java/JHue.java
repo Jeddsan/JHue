@@ -15,14 +15,14 @@ import java.net.URL;
 /**
  * Created by Julian on 18.08.2016.
  */
-public class Hue {
+public class JHue {
 
     private URL url = null;
     private String result="";
     private String ip="";
     private String username="";
 
-    public Hue(String username, String ip){
+    public JHue(String username, String ip){
         this.username = username;
         this.ip = ip;
     }
@@ -54,7 +54,7 @@ public class Hue {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        result = Requests.requestURL(url,"PUT","{\"on\": "+state+"}");
+        result = JRequests.requestURL(url,"PUT","{\"on\": "+state+"}");
     }
 
     /**
@@ -75,7 +75,7 @@ public class Hue {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        result = Requests.requestURL(url,"PUT","{\"on\": true,\"bri\": "+dim_number+"}");
+        result = JRequests.requestURL(url,"PUT","{\"on\": true,\"bri\": "+dim_number+"}");
     }
 
     public static String setAuthMode(String devicetype, String ip){
@@ -90,7 +90,7 @@ public class Hue {
                 e.printStackTrace();
             }
 
-            result = Requests.requestURL(url,"POST","{\"devicetype\": \"" + devicetype + "\"}");
+            result = JRequests.requestURL(url,"POST","{\"devicetype\": \"" + devicetype + "\"}");
             result = result.substring(1, result.length()-1);
 
             try {
