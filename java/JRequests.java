@@ -18,7 +18,7 @@ import java.net.URL;
 /**
  * Created by Julian on 18.08.2016.
  */
-public class Requests {
+public class JRequests {
 
 
     public static String requestURL(URL url, String method, String body){
