@@ -12,8 +12,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.ProtocolException;
+import java.net.SocketException;
 import java.net.URL;
+import java.util.Collections;
 
 /**
  * Created by Julian on 18.08.2016.
@@ -25,58 +30,62 @@ public class JRequests {
         String result = "";
         HttpURLConnection httpCon = null;
         try {
-            httpCon = (HttpURLConnection) url.openConnection();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assert httpCon != null;
-        httpCon.setDoOutput(true);
-        try {
-            httpCon.setRequestMethod(method);
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        }
-        OutputStreamWriter out = null;
-        try {
-            out = new OutputStreamWriter(
-                    httpCon.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            assert out != null;
-            out.write(body);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            httpCon.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        InputStream is = null;
-        result="";
-        try {
-            is = new BufferedInputStream(httpCon.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        String inputLine = "";
-        try {
-            while ((inputLine = br.readLine()) != null) {
-                result+=inputLine;
+            try {
+                httpCon = (HttpURLConnection) url.openConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            assert httpCon != null;
+            httpCon.setDoOutput(true);
+            try {
+                httpCon.setRequestMethod(method);
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            }
+            OutputStreamWriter out = null;
+            try {
+                out = new OutputStreamWriter(
+                        httpCon.getOutputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                assert out != null;
+                out.write(body);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                httpCon.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            InputStream is = null;
+            result = "";
+            try {
+                is = new BufferedInputStream(httpCon.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String inputLine = "";
+            try {
+                while ((inputLine = br.readLine()) != null) {
+                    result += inputLine;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return result;
+        }catch (NullPointerException e){
+            return "{\"nothing\":\"nothing\"}";
         }
-        return result;
     }
     public static boolean saveData(String filename, String content, Context ctx){
         try {
@@ -117,5 +126,56 @@ public class JRequests {
             e.printStackTrace();
             return null;
         }
+    }
+    public static String getLocalIPAddress(){
+        String currentIP = "";
+        try {
+            for (NetworkInterface ni :
+                    Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                for (InetAddress address : Collections.list(ni.getInetAddresses())) {
+                    if (address instanceof Inet4Address) {
+                        System.out.println(address);
+                        if(!address.isLoopbackAddress()){
+                            currentIP = address.toString().replace("/","");
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return currentIP;
+    }
+    public static String[] getLocalNetworkDevices(String currentIP, int timeout, int port){
+        String[] IPAdresses = new String[255];
+        try {
+            String subnet = getSubnet(currentIP);
+            System.out.println("subnet: " + subnet);
+
+            int i_ip = 0;
+
+            for (int i=1;i<254;i++){
+
+                String host = subnet + i;
+                System.out.println("Checking :" + host);
+
+                if (InetAddress.getByName(host).isReachable(timeout)){
+                    System.out.println(host + " is reachable");
+                    IPAdresses[i_ip]=host;
+                    i_ip++;
+                }
+            }
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+        return IPAdresses;
+    }
+
+    private static String getSubnet(String currentIP) {
+        int firstSeparator = currentIP.lastIndexOf("/");
+        int lastSeparator = currentIP.lastIndexOf(".");
+        return currentIP.substring(firstSeparator+1, lastSeparator+1);
     }
 }
