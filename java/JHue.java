@@ -236,6 +236,35 @@ public class JHue {
         }
         return i;
     }
+    public int getGroupIdFromName(String name){
+        int i=0;
+        JSONObject obj = null;
+        result = getAllGroups();
+        try {
+            obj = new JSONObject(result);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        while(true) {
+            i++;
+            try {
+                JSONObject id = obj.getJSONObject(i+"");
+                String hue_group_name =  id.getString("name");
+                if(hue_group_name.equals(name)){
+                    break;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                i=0;
+                break;
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                i=0;
+                break;
+            }
+        }
+        return i;
+    }
 
     /**
      * Set the brightness value for a specific lamp
