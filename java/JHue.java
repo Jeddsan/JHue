@@ -362,4 +362,43 @@ public class JHue {
         }
         return addresses[i];
     }
+
+    public static Boolean checkBridgeAddress(String ip){
+        int i = 0;
+        String result;
+        JSONObject obj = null;
+        URL url = null;
+        if(ip==null){
+            return false;
+        }else{
+            try {
+                url = new URL("http://" + ip + "/api/");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            result = JRequests.requestURL(url,"POST","{}");
+            result = result.substring(1, result.length()-1);
+            result = result.toString();
+
+            try {
+                obj = new JSONObject(result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return false;
+            }
+            try {
+                String error=obj.getString("error");
+                return true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return false;
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+        }
+    }
 }
