@@ -21,6 +21,7 @@ public class JHue {
 
     private URL url = null;
     private String result="";
+    private String result_all_lights = "";
     private String ip="";
     private String username="";
     private float[] hsv = new float[3];
@@ -209,11 +210,20 @@ public class JHue {
 
     public int getLightIdFromName(String name){
         int i=0;
+        int position = 0;
         JSONObject obj = null;
-        result = getAllLights();
+        result_all_lights = getAllLights();
         try {
-            obj = new JSONObject(result);
+            obj = new JSONObject(result_all_lights);
         } catch (JSONException e) {
+            position = result_all_lights.indexOf("]");
+            result_all_lights = result_all_lights.substring(position+1);
+            try {
+                obj = new JSONObject(result_all_lights);
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+                return 0;
+            }
             e.printStackTrace();
         }
         while(true) {
