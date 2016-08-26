@@ -3,7 +3,6 @@ package jeddsan.net.huetest;
 import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.os.Build;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -231,7 +230,7 @@ public class JHue {
             try {
                 JSONObject id = obj.getJSONObject(i+"");
                 String hue_light_name =  id.getString("name");
-                if(hue_light_name.equals(name)){
+                if(hue_light_name.equalsIgnoreCase(name)){
                     break;
                 }
             } catch (JSONException e) {
@@ -260,7 +259,7 @@ public class JHue {
             try {
                 JSONObject id = obj.getJSONObject(i+"");
                 String hue_group_name =  id.getString("name");
-                if(hue_group_name.equals(name)){
+                if(hue_group_name.equalsIgnoreCase(name)){
                     break;
                 }
             } catch (JSONException e) {
