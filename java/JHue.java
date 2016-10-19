@@ -235,8 +235,12 @@ public class JHue {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                i=0;
-                break;
+                i++;
+                if(i>=5000){
+                    break;
+                }else{
+                    continue;
+                }
             } catch (NullPointerException e) {
                 e.printStackTrace();
                 i=0;
